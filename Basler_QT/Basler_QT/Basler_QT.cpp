@@ -26,7 +26,12 @@ Basler_QT::Basler_QT(QWidget *parent)
 
 Basler_QT::~Basler_QT()
 {
-	
+	for (int i = 0; i < MaxCamera; i++)
+	{
+		m_camera[i].Close();
+	}
+
+	// delete ui;
 }
 
 // Helper function to get a list of all attached devices and store it in m_devices.
