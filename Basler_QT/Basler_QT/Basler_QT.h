@@ -23,7 +23,15 @@ public:
 
 	void ShowWarning(QString warningText);
 
+	// open camera function
+	bool InternalOpenCamera(const Pylon::CDeviceInfo& devInfo, int cameraId);
 
+	// close camera function
+	void InternalCloseCamera(int cameraId);
+
+
+protected:
+	virtual void paintEvent(QPaintEvent *) override;
 
 
 

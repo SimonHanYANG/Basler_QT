@@ -86,6 +86,82 @@ void Basler_QT::OnNewGrabResult(int userHint)
 	}
 }
 
+// Helper function to open a CGuiCamera and update controls.
+// After the camera has been opened, we adjust the controls to configure
+// the camera features. Slider ranges are set and drop-down lists are filled
+// with enumeration entries.
+bool Basler_QT::InternalOpenCamera(const Pylon::CDeviceInfo& devInfo, int cameraId)
+{
+	try
+	{
+		// Open() may throw exceptions.
+		m_camera[cameraId].Open(devInfo);
+		return true;
+	}
+	catch (const Pylon::GenericException& e)
+	{
+		ShowWarning(QString("Could not open camera!\n") + QString(e.GetDescription()));
+
+		return false;
+	}
+
+
+
+}
+
+// Helper function to close a CGuiCamera and update controls.
+// After the camera has been closed, we disable controls to configure the camera.
+// Slider ranges are reset and drop-down lists are cleared.
+void Basler_QT::InternalCloseCamera(int cameraId)
+{
+	try
+	{
+		m_camera[cameraId].Close();
+
+		// Enable/disable controls.
+		// UpdateCameraDialog(cameraId);
+	}
+	catch (const Pylon::GenericException& e)
+	{
+		PYLON_UNUSED(e);
+	}
+}
+
+// This overrides the paintEvent of the dialog to paint the images.
+// For better performance and easy maintenance a custom control should be used.
+void Basler_QT::paintEvent(QPaintEvent *ev)
+{
+	QMainWindow::paintEvent(ev);
+	
+	// Repaint image of the camera 0
+	if (m_camera[0].IsOpen())
+	{
+		QPainter painter(this);
+		QRect target = ui.ImageShowWidget->geometry();
+
+		QMutexLocker locker(m_camera[0].GetBmpLock());
+		QImage image = m_camera[0].GetImage();
+		QRect source = QRect(0, 0, image.width(), image.height());
+
+		// painte the image
+		painter.drawImage(target, image, source);
+	}
+
+	// Repaint image of the camera 1
+	if (m_camera[1].IsOpen())
+	{
+		QPainter painter(this);
+		QRect target = ui.ImageShowWidget->geometry();
+
+		QMutexLocker locker(m_camera[1].GetBmpLock());
+		QImage image = m_camera[1].GetImage();
+		QRect source = QRect(0, 0, image.width(), image.height());
+
+		// painte the image
+		painter.drawImage(target, image, source);
+	}
+}
+
 
 // DiscoverCam Function -- Discover cameras
 void Basler_QT::on_DiscoverCam_clicked()
@@ -128,23 +204,65 @@ void Basler_QT::on_DiscoverCam_clicked()
 // SingleShotButton Function -- Open Selected Btn
 void Basler_QT::on_OpenSelectedButton_clicked()
 {
-	qDebug() << "Open Camera!\n";
 	// QLable show text
 	ui.CamOpenStatusLabel->setText("Camera has been opened!");
+
+	int index = ui.CameraListComboBox->currentIndex();
+	qDebug() << "Open Camera " << index << "!\n";
+
+	if (index < 0)
+	{
+		// if there is no camera opened
+		return;
+	}
+
+	// Get the pointer to Pylon::CDeviceInfo selected
+	const Pylon::CDeviceInfo* pDeviceInfo = (const Pylon::CDeviceInfo*)ui.CameraListComboBox->itemData(index).value<void *>();
+
+	// Open the camera
+	InternalOpenCamera(*pDeviceInfo, index);
 }
 
 // CloseCamButton Function -- Close Camera Btn
 void Basler_QT::on_CloseCamButton_clicked()
 {
-	qDebug() << "Close Camera!\n";
 	// QLable show text
 	ui.CamOpenStatusLabel->setText("Camera has been closed!");
+
+	// Find the opened camera index
+	int index = ui.CameraListComboBox->currentIndex();
+	qDebug() << "Close Camera " << index << "!\n";
+
+	if (index < 0)
+	{
+		// if there is no camera opened
+		return;
+	}
+
+	InternalCloseCamera(index);
+
+	// Make sure to repaint the image control.
+	// The actual drawing is done in paintEvent.
+	ui.ImageShowWidget->repaint();
 }
 
 // SingleShotButton Function -- Single Shot Btn
 void Basler_QT::on_SingleShotButton_clicked()
 {
-	qDebug() << "Single Shot!\n";
+	// Find the opened camera index
+	int index = ui.CameraListComboBox->currentIndex();
+	qDebug() << "Camera " << index << " Started Single Shot!\n";
+
+	// Start camera single grab
+	try
+	{
+		m_camera[index].SingleGrab();
+	}
+	catch (const Pylon::GenericException& e)
+	{
+		ShowWarning(QString("Could not start grab!\n") + QString(e.GetDescription()));
+	}
+
 }
 
 // ContinuousShotButton Function -- Continuous Shot Btn

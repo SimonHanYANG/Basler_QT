@@ -109,6 +109,12 @@ Pylon::IIntegerEx& CameraControl::GetExposureTime()
 	return m_exposureTime;
 }
 
+// This GUI needs to lock the bitmap image while painting it to the screen.
+QMutex* CameraControl::GetBmpLock() const
+{
+	return &m_imageLock;
+}
+
 // Returns statistical values for the GUI.
 uint64_t CameraControl::GetGrabbedImages() const
 {

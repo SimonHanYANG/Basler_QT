@@ -43,6 +43,7 @@ public:
 public:
 	// For GUI -- get the exposure time
 	Pylon::IIntegerEx& GetExposureTime();
+	QMutex* GetBmpLock() const;
 
 public:
 	// Statistics
