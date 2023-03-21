@@ -268,13 +268,37 @@ void Basler_QT::on_SingleShotButton_clicked()
 // ContinuousShotButton Function -- Continuous Shot Btn
 void Basler_QT::on_ContinuousShotButton_clicked()
 {
-	qDebug() << "Continuous Shot!\n";
+	// Find the opened camera index
+	int index = ui.CameraListComboBox->currentIndex();
+	qDebug() << "Camera " << index << " Started Continuous Shot!\n";
+
+	try
+	{
+		m_camera[index].ContinuousGrab();
+	}
+	catch (const Pylon::GenericException& e)
+	{
+		ShowWarning(QString("Could not start grab!\n") + QString(e.GetDescription()));
+	}
+
 }
 
 // StopButton Function -- Stop Btn
 void Basler_QT::on_StopButton_clicked()
 {
-	qDebug() << "Stop Grabbing!\n";
+	// Find the opened camera index
+	int index = ui.CameraListComboBox->currentIndex();
+	qDebug() << "Camera " << index << " Stop Shotting!\n";
+
+	try
+	{
+		m_camera[index].StopGrab();
+	}
+	catch (const Pylon::GenericException& e)
+	{
+		ShowWarning(QString("Could not stop grab!\n") + QString(e.GetDescription()));
+	}
+
 }
 
 // ExposureTimeSlider Function -- Exposure Time SlideBar
