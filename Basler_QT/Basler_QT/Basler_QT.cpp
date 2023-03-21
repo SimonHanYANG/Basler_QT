@@ -9,7 +9,7 @@ Basler_QT::Basler_QT(QWidget *parent)
 	{
 		m_camera[i].SetUserHint(i);
 
-		// Connect signals from CGuiCamera class to this dialog.
+		// Connect signals from CGuiCamera class to this QTMainWindow.
 		QObject::connect(&(m_camera[i]), &CameraControl::NewGrabResult, this, &Basler_QT::OnNewGrabResult);
 		// QObject::connect(&(m_camera[i]), &CameraControl::StateChanged, this, &Basler_QT::OnStateChanged);
 		// QObject::connect(&(m_camera[i]), &CameraControl::DeviceRemoved, this, &Basler_QT::OnDeviceRemoved);
@@ -206,7 +206,7 @@ void Basler_QT::on_DiscoverCam_clicked()
 	// on_cameraList_currentIndexChanged(-1);
 }
 
-// SingleShotButton Function -- Open Selected Btn
+// SelectCamButton Function -- Open Selected Btn
 void Basler_QT::on_OpenSelectedButton_clicked()
 {
 	// QLable show text
