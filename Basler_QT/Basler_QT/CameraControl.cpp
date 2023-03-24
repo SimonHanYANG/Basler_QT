@@ -177,7 +177,10 @@ void CameraControl::Open(const Pylon::CDeviceInfo& deviceInfo)
 		}
 		else if (m_camera.ExposureTimeRaw.IsValid())
 		{
+			// 将相机的 ExposureTimeRaw 属性（相机曝光时间的原始值）绑定到一个 GenApi 节点对象 m_exposureTime 上
 			m_exposureTime.Attach(m_camera.ExposureTimeRaw.GetNode());
+			// int64_t exposureTime = m_exposureTime.GetValue(); // 读取相机曝光时间的值
+			m_exposureTime.SetValue(5000); // 设置相机曝光时间为 5000 微秒
 		}
 
 		// Get the Gain feature.
@@ -352,17 +355,17 @@ void CameraControl::OnImageGrabbed(Pylon::CInstantCamera& camera, const Pylon::C
 	{
 		// This is where you would do image processing and other tasks.
 		// --- Start of sample image processing --- (only works for 8-bit formats)
-		if (m_invertImage && Pylon::BitDepth(grabResult->GetPixelType()) == 8)
-		{
-			size_t imageSize = Pylon::ComputeBufferSize(grabResult->GetPixelType(), grabResult->GetWidth(), grabResult->GetHeight(), grabResult->GetPaddingX());
+		//if (m_invertImage && Pylon::BitDepth(grabResult->GetPixelType()) == 8)
+		//{
+		//	size_t imageSize = Pylon::ComputeBufferSize(grabResult->GetPixelType(), grabResult->GetWidth(), grabResult->GetHeight(), grabResult->GetPaddingX());
 
-			uint8_t* p = reinterpret_cast<uint8_t*>(grabResult->GetBuffer());
-			uint8_t* const pEnd = p + (imageSize / sizeof(uint8_t));
-			for (; p < pEnd; ++p)
-			{
-				*p = 255 - *p; //For demonstration purposes only, invert the image.
-			}
-		}
+		//	uint8_t* p = reinterpret_cast<uint8_t*>(grabResult->GetBuffer());
+		//	uint8_t* const pEnd = p + (imageSize / sizeof(uint8_t));
+		//	for (; p < pEnd; ++p)
+		//	{
+		//		*p = 255 - *p; //For demonstration purposes only, invert the image.
+		//	}
+		//}
 		//--- End of sample image processing ---
 
 		// Convert the processed image to a QImage so we can display it on the screen.

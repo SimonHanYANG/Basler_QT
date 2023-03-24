@@ -31,9 +31,13 @@ Basler_QT::~Basler_QT()
 		m_camera[i].Close();
 	}
 
-	// delete ui;
+	delete& ui;
 }
 
+
+/************************************************************************/
+/* Camera Control                                                       */
+/************************************************************************/
 // Helper function to get a list of all attached devices and store it in m_devices.
 int Basler_QT::EnumerateDevices()
 {
@@ -97,20 +101,26 @@ void Basler_QT::OnNewGrabResult(int userHint)
 // with enumeration entries.
 bool Basler_QT::InternalOpenCamera(const Pylon::CDeviceInfo& devInfo, int cameraId)
 {
-	try
+	// if the m_camera[index] is open
+	if (m_camera[cameraId].IsOpen())
 	{
-		// Open() may throw exceptions.
-		m_camera[cameraId].Open(devInfo);
 		return true;
 	}
-	catch (const Pylon::GenericException& e)
+	else
 	{
-		ShowWarning(QString("Could not open camera!\n") + QString(e.GetDescription()));
+		try
+		{
+			// Open() may throw exceptions.
+			m_camera[cameraId].Open(devInfo);
+			return true;
+		}
+		catch (const Pylon::GenericException& e)
+		{
+			ShowWarning(QString("Could not open camera!\n") + QString(e.GetDescription()));
 
-		return false;
+			return false;
+		}
 	}
-
-
 
 }
 
@@ -201,32 +211,29 @@ void Basler_QT::on_DiscoverCam_clicked()
 
 	// Select first item.
 	ui.CameraListComboBox->setCurrentIndex(0);
-
-	// Enable/disable controls.
-	// on_cameraList_currentIndexChanged(-1);
 }
 
 // SelectCamButton Function -- Open Selected Btn
-void Basler_QT::on_OpenSelectedButton_clicked()
-{
-	// QLable show text
-	ui.CamOpenStatusLabel->setText("Camera has been opened!");
-
-	int index = ui.CameraListComboBox->currentIndex();
-	qDebug() << "Open Camera " << index << "!\n";
-
-	if (index < 0)
-	{
-		// if there is no camera opened
-		return;
-	}
-
-	// Get the pointer to Pylon::CDeviceInfo selected
-	const Pylon::CDeviceInfo* pDeviceInfo = (const Pylon::CDeviceInfo*)ui.CameraListComboBox->itemData(index).value<void *>();
-
-	// Open the camera
-	InternalOpenCamera(*pDeviceInfo, index);
-}
+//void Basler_QT::on_OpenSelectedButton_clicked()
+//{
+//	// QLable show text
+//	ui.CamOpenStatusLabel->setText("Camera has been opened!");
+//
+//	int index = ui.CameraListComboBox->currentIndex();
+//	qDebug() << "Open Camera " << index << "!\n";
+//
+//	if (index < 0)
+//	{
+//		// if there is no camera opened
+//		return;
+//	}
+//
+//	// Get the pointer to Pylon::CDeviceInfo selected
+//	const Pylon::CDeviceInfo* pDeviceInfo = (const Pylon::CDeviceInfo*)ui.CameraListComboBox->itemData(index).value<void *>();
+//
+//	// Open the camera
+//	InternalOpenCamera(*pDeviceInfo, index);
+//}
 
 // CloseCamButton Function -- Close Camera Btn
 void Basler_QT::on_CloseCamButton_clicked()
@@ -254,9 +261,24 @@ void Basler_QT::on_CloseCamButton_clicked()
 // SingleShotButton Function -- Single Shot Btn
 void Basler_QT::on_SingleShotButton_clicked()
 {
+	// QLable show text
+	ui.CamOpenStatusLabel->setText("Camera has been open for Single Shot!");
+
 	// Find the opened camera index
 	int index = ui.CameraListComboBox->currentIndex();
 	qDebug() << "Camera " << index << " Started Single Shot!\n";
+
+	if (index < 0)
+	{
+		// if there is no camera opened
+		return;
+	}
+
+	// Get the pointer to Pylon::CDeviceInfo selected
+	const Pylon::CDeviceInfo* pDeviceInfo = (const Pylon::CDeviceInfo*)ui.CameraListComboBox->itemData(index).value<void *>();
+
+	// Open the camera
+	InternalOpenCamera(*pDeviceInfo, index);
 
 	// Start camera single grab
 	try
@@ -273,9 +295,23 @@ void Basler_QT::on_SingleShotButton_clicked()
 // ContinuousShotButton Function -- Continuous Shot Btn
 void Basler_QT::on_ContinuousShotButton_clicked()
 {
-	// Find the opened camera index
+	// QLable show text
+	ui.CamOpenStatusLabel->setText("Camera has been open for Continuous Shot!");
+
 	int index = ui.CameraListComboBox->currentIndex();
-	qDebug() << "Camera " << index << " Started Continuous Shot!\n";
+	qDebug() << "Open Camera " << index << "!\n";
+
+	if (index < 0)
+	{
+		// if there is no camera opened
+		return;
+	}
+
+	// Get the pointer to Pylon::CDeviceInfo selected
+	const Pylon::CDeviceInfo* pDeviceInfo = (const Pylon::CDeviceInfo*)ui.CameraListComboBox->itemData(index).value<void *>();
+
+	// Open the camera
+	InternalOpenCamera(*pDeviceInfo, index);
 
 	try
 	{
@@ -306,9 +342,40 @@ void Basler_QT::on_StopButton_clicked()
 
 }
 
-// ExposureTimeSlider Function -- Exposure Time SlideBar
-// 将相机的曝光时间增加以后，相机的帧率就下降
-void Basler_QT::on_ExposureTimeSlider_valueChanged(int value)
+
+/************************************************************************/
+/* Camera Operations                                                    */
+/************************************************************************/
+void Basler_QT::on_SaveImgBtn_clicked()
 {
-	qDebug() << "Slider value (Exposure Time) is:" << value;
+	qDebug() << "Save Image Button Clicked!\n";
+
+	// set image saved name
+	QString image_file_name;
+	QString image_saved_path;
+
+	// 获取当前日期和时间
+	QDateTime currentDateTime = QDateTime::currentDateTime();
+
+	// 获取当前日期
+	QDate currentDate = currentDateTime.date();
+	// qDebug() << "Current date: " << currentDate.toString("yyyy-MM-dd");
+
+	// 获取当前时间
+	QTime currentTime = currentDateTime.time();
+	// qDebug() << "Current time: " << currentTime.toString("hh_mm_ss");
+
+	// image_file_name: yyyy-MM-dd_hh:mm:ss
+	image_file_name = currentDate.toString("yyyy-MM-dd") + "_" + currentTime.toString("hh_mm_ss");
+	qDebug() << "Image file name is: " << image_file_name << "!\n";
+
+	// image_saved_path: yyyy-MM-dd_hh_mm_ss.mp4 
+	image_saved_path = m_image_folder_name + image_file_name + m_image_file_suffix;
+	qDebug() << "Image file saved path is: " << image_saved_path << "!\n";
+
+
+	
+	ui.SaveImgInfo->setText("Image Saved!");
+
+
 }

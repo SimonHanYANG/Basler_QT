@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1047</width>
-    <height>829</height>
+    <width>1226</width>
+    <height>824</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="DiscoverCam">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>10</y>
       <width>111</width>
       <height>31</height>
@@ -30,32 +30,19 @@
    <widget class="QComboBox" name="CameraListComboBox">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>130</x>
       <y>10</y>
       <width>511</width>
       <height>31</height>
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="OpenSelectedButton">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>70</y>
-      <width>111</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Open Selected</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="CloseCamButton">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>70</y>
-      <width>111</width>
+      <x>660</x>
+      <y>10</y>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
@@ -66,9 +53,9 @@
    <widget class="QLabel" name="CamOpenStatusLabel">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>70</y>
-      <width>271</width>
+      <x>390</x>
+      <y>50</y>
+      <width>361</width>
       <height>31</height>
      </rect>
     </property>
@@ -85,10 +72,10 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QWidget" name="ImageShowWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>120</y>
-      <width>641</width>
-      <height>491</height>
+      <x>10</x>
+      <y>90</y>
+      <width>741</width>
+      <height>661</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -98,8 +85,8 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QPushButton" name="SingleShotButton">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>630</y>
+      <x>10</x>
+      <y>50</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -111,8 +98,8 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QPushButton" name="ContinuousShotButton">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>630</y>
+      <x>130</x>
+      <y>50</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -124,8 +111,8 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QPushButton" name="StopButton">
     <property name="geometry">
      <rect>
-      <x>500</x>
-      <y>630</y>
+      <x>260</x>
+      <y>50</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -134,39 +121,159 @@ border-color: rgb(0, 0, 0)</string>
      <string>Stop</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label">
+   <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>690</y>
-      <width>111</width>
-      <height>31</height>
+      <x>790</x>
+      <y>10</y>
+      <width>421</width>
+      <height>131</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>11</pointsize>
+      <pointsize>14</pointsize>
+      <weight>75</weight>
+      <italic>false</italic>
+      <bold>true</bold>
+      <underline>true</underline>
      </font>
     </property>
-    <property name="text">
-     <string>Exposure Time</string>
+    <property name="title">
+     <string>Camera Operations</string>
     </property>
-   </widget>
-   <widget class="QSlider" name="ExposureTimeSlider">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>700</y>
-      <width>421</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-    <property name="tickPosition">
-     <enum>QSlider::TicksBelow</enum>
-    </property>
+    <widget class="QLabel" name="SaveImgLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>91</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>true</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Save Image</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="RecordVideoLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>90</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>true</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Record Video</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="RecordVideoStart">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>90</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Record Start</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="RecordVideoStop">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>90</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Record Stop</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="SaveImgBtn">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>30</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Save Image</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="SaveImgInfo">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>30</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>9</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:rgb(170, 255, 255);
+border-width: 1px;
+border-style: solid;
+border-color: rgb(0, 0, 0)</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -174,7 +281,7 @@ border-color: rgb(0, 0, 0)</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1047</width>
+     <width>1226</width>
      <height>23</height>
     </rect>
    </property>

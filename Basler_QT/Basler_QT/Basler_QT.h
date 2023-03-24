@@ -4,11 +4,20 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QPainter>
+#include <QDateTime>
 
 #include "ui_Basler_QT.h"
 
 // Include files to use the pylon API.
 #include "CameraControl.h"
+
+// opencv API
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+
+using namespace cv;
+using namespace std;
+
 
 class Basler_QT : public QMainWindow
 {
@@ -44,13 +53,14 @@ private slots:
 
 	// Slots for GUI signals
 	void on_DiscoverCam_clicked();
-	void on_OpenSelectedButton_clicked();
 	void on_CloseCamButton_clicked();
 	void on_SingleShotButton_clicked();
 	void on_ContinuousShotButton_clicked();
 	void on_StopButton_clicked();
-	void on_ExposureTimeSlider_valueChanged(int value);
-	// void on_CameraListComboBox_currentIndexChanged(int index);
+
+private slots:
+	// Camera Operations
+	void on_SaveImgBtn_clicked();
 
 private:
 	Ui::Basler_QTClass ui;
@@ -59,9 +69,12 @@ private:
 	Pylon::DeviceInfoList_t m_devices;
 	// max camera number
 	static const int MaxCamera = 2;
-	// CameraControl 
+	// CameraControl all activate camera
 	CameraControl m_camera[MaxCamera];
 
-
+private:
+	QString m_image_folder_name = "D:\\Simon_workspace\\Basler_QT\\imgtmp";
+	QString m_video_folder_name = "D:\\Simon_workspace\\Basler_QT\\videotmp";
+	QString m_image_file_suffix = ".mp4";
 	
 };
