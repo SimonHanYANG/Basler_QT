@@ -202,10 +202,14 @@
     <QtMoc Include="Basler_QT.h" />
     <ClCompile Include="Basler_QT.cpp" />
     <ClCompile Include="CameraControl.cpp" />
+    <ClCompile Include="CameraOperation.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CameraControl.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="CameraOperation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">

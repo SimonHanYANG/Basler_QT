@@ -20,6 +20,31 @@ Basler_QT::Basler_QT(QWidget *parent)
 	cameraNum = EnumerateDevices();
 	qDebug() << "Detected Camera Number is: " << cameraNum;
 
+	/************************************************************************/
+	/* Camera Operations                                                    */
+	/************************************************************************/
+	//========================================================================
+	//========================================================================
+	// Image Save Thread -- connect btn & slot
+	m_cameraOperation = new CameraOperation();
+	// 1. create image save thread
+	m_image_save_thread = new QThread;
+	// 2. create new ImageSaveWorker
+	m_image_save_worker = new ImageSaveWorker(m_cameraOperation);
+	// 3. 另一种创建线程的方式是创建一个 QObject 的子类，并将其移动到一个新线程中
+	m_image_save_worker->moveToThread(m_image_save_thread);
+	// 4. 使用 connect() 函数连接 QThread 的 started() 信号和 MyObject 的 myFunction() 槽函数，
+	//	  当新线程启动时，myFunction() 槽函数会被自动调用，并在新线程中执行代码
+	connect(ui.SaveImgBtn, SIGNAL(clicked()), m_image_save_worker, SLOT(ImageSave()));
+	// 3. start the thread
+	m_image_save_thread->start(QThread::HighestPriority);
+	m_image_saved = true;
+	if (m_image_saved == true)
+	{
+		ui.SaveImgInfo->setText("Image Saved!");
+	}
+
+
 	// Remove question mark from the title bar.
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 }
@@ -30,6 +55,15 @@ Basler_QT::~Basler_QT()
 	{
 		m_camera[i].Close();
 	}
+
+	//========================================================================
+	//========================================================================
+	// Close all threads
+	// 1. close image save thread
+	m_image_save_thread->quit();
+	m_image_save_thread->wait();
+	delete m_image_save_thread;
+	delete m_image_save_worker;
 
 	delete& ui;
 }
@@ -42,7 +76,7 @@ Basler_QT::~Basler_QT()
 int Basler_QT::EnumerateDevices()
 {
 	// Before using any pylon methods, the pylon runtime must be initialized.
-	Pylon::PylonInitialize();
+	// Pylon::PylonInitialize();
 
 	Pylon::DeviceInfoList_t devices;
 	try
@@ -339,43 +373,5 @@ void Basler_QT::on_StopButton_clicked()
 	{
 		ShowWarning(QString("Could not stop grab!\n") + QString(e.GetDescription()));
 	}
-
-}
-
-
-/************************************************************************/
-/* Camera Operations                                                    */
-/************************************************************************/
-void Basler_QT::on_SaveImgBtn_clicked()
-{
-	qDebug() << "Save Image Button Clicked!\n";
-
-	// set image saved name
-	QString image_file_name;
-	QString image_saved_path;
-
-	// 获取当前日期和时间
-	QDateTime currentDateTime = QDateTime::currentDateTime();
-
-	// 获取当前日期
-	QDate currentDate = currentDateTime.date();
-	// qDebug() << "Current date: " << currentDate.toString("yyyy-MM-dd");
-
-	// 获取当前时间
-	QTime currentTime = currentDateTime.time();
-	// qDebug() << "Current time: " << currentTime.toString("hh_mm_ss");
-
-	// image_file_name: yyyy-MM-dd_hh:mm:ss
-	image_file_name = currentDate.toString("yyyy-MM-dd") + "_" + currentTime.toString("hh_mm_ss");
-	qDebug() << "Image file name is: " << image_file_name << "!\n";
-
-	// image_saved_path: yyyy-MM-dd_hh_mm_ss.mp4 
-	image_saved_path = m_image_folder_name + image_file_name + m_image_file_suffix;
-	qDebug() << "Image file saved path is: " << image_saved_path << "!\n";
-
-
-	
-	ui.SaveImgInfo->setText("Image Saved!");
-
 
 }

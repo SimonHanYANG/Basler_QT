@@ -11,9 +11,8 @@
 // Include files to use the pylon API.
 #include "CameraControl.h"
 
-// opencv API
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
+// Include files to camera operation
+#include "CameraOperation.h"
 
 using namespace cv;
 using namespace std;
@@ -60,7 +59,7 @@ private slots:
 
 private slots:
 	// Camera Operations
-	void on_SaveImgBtn_clicked();
+	// void on_SaveImgBtn_clicked();
 
 private:
 	Ui::Basler_QTClass ui;
@@ -73,8 +72,8 @@ private:
 	CameraControl m_camera[MaxCamera];
 
 private:
-	QString m_image_folder_name = "D:\\Simon_workspace\\Basler_QT\\imgtmp";
-	QString m_video_folder_name = "D:\\Simon_workspace\\Basler_QT\\videotmp";
-	QString m_image_file_suffix = ".mp4";
-	
+	CameraOperation* m_cameraOperation;
+	QThread* m_image_save_thread;
+	ImageSaveWorker* m_image_save_worker;
+	bool m_image_saved = false;
 };

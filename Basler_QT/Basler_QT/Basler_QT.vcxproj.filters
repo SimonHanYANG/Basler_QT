@@ -43,9 +43,15 @@
     <ClCompile Include="CameraControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CameraOperation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="CameraControl.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="CameraOperation.h">
       <Filter>Header Files</Filter>
     </QtMoc>
   </ItemGroup>

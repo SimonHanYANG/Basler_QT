@@ -3,6 +3,9 @@
 
 int main(int argc, char *argv[])
 {
+	// ≥ı ºªØ Pylon ø‚
+	Pylon::PylonInitialize();
+
     QApplication a(argc, argv);
     Basler_QT w;
     w.show();
