@@ -20,29 +20,34 @@ Basler_QT::Basler_QT(QWidget *parent)
 	cameraNum = EnumerateDevices();
 	qDebug() << "Detected Camera Number is: " << cameraNum;
 
+
 	/************************************************************************/
-	/* Camera Operations                                                    */
+	/* Image Process Thread                                                 */
 	/************************************************************************/
-	//========================================================================
-	//========================================================================
-	// Image Save Thread -- connect btn & slot
 	m_cameraOperation = new CameraOperation();
-	// 1. create image save thread
-	m_image_save_thread = new QThread;
-	// 2. create new ImageSaveWorker
+
+	// create image process thread
+	m_image_process_thread = new QThread;
+
+	// start the thread
+	m_image_process_thread->start(QThread::HighestPriority);
+	
+	//========================================================================
+	//========================================================================
+	// 1. Image Save -- connect btn & slot
+	// 1.1. create new ImageSaveWorker
 	m_image_save_worker = new ImageSaveWorker(m_cameraOperation);
-	// 3. 另一种创建线程的方式是创建一个 QObject 的子类，并将其移动到一个新线程中
-	m_image_save_worker->moveToThread(m_image_save_thread);
-	// 4. 使用 connect() 函数连接 QThread 的 started() 信号和 MyObject 的 myFunction() 槽函数，
+	// 1.2. 使用 connect() 函数连接 QThread 的 started() 信号和 MyObject 的 myFunction() 槽函数，
 	//	  当新线程启动时，myFunction() 槽函数会被自动调用，并在新线程中执行代码
 	connect(ui.SaveImgBtn, SIGNAL(clicked()), m_image_save_worker, SLOT(ImageSave()));
-	// 3. start the thread
-	m_image_save_thread->start(QThread::HighestPriority);
-	m_image_saved = true;
-	if (m_image_saved == true)
-	{
-		ui.SaveImgInfo->setText("Image Saved!");
-	}
+	// 1.3. 创建线程的方式是创建一个 QObject 的子类，并将其移动到一个新线程中
+	m_image_save_worker->moveToThread(m_image_process_thread);
+
+
+
+
+	
+
 
 
 	// Remove question mark from the title bar.
@@ -59,10 +64,10 @@ Basler_QT::~Basler_QT()
 	//========================================================================
 	//========================================================================
 	// Close all threads
-	// 1. close image save thread
-	m_image_save_thread->quit();
-	m_image_save_thread->wait();
-	delete m_image_save_thread;
+	// 1. close image process thread
+	m_image_process_thread->quit();
+	m_image_process_thread->wait();
+	delete m_image_process_thread;
 	delete m_image_save_worker;
 
 	delete& ui;
@@ -189,11 +194,14 @@ void Basler_QT::paintEvent(QPaintEvent *ev)
 		QRect target = ui.ImageShowWidget->geometry();
 
 		QMutexLocker locker(m_camera[0].GetBmpLock());
-		QImage image = m_camera[0].GetImage();
-		QRect source = QRect(0, 0, image.width(), image.height());
+
+		m_raw_img = m_camera[0].GetImage();
+		m_display_img = m_raw_img;
+
+		QRect source = QRect(0, 0, m_display_img.width(), m_display_img.height());
 
 		// painte the image
-		painter.drawImage(target, image, source);
+		painter.drawImage(target, m_display_img, source);
 	}
 
 	// Repaint image of the camera 1
@@ -203,11 +211,14 @@ void Basler_QT::paintEvent(QPaintEvent *ev)
 		QRect target = ui.ImageShowWidget->geometry();
 
 		QMutexLocker locker(m_camera[1].GetBmpLock());
-		QImage image = m_camera[1].GetImage();
-		QRect source = QRect(0, 0, image.width(), image.height());
+
+		m_raw_img = m_camera[0].GetImage();
+		m_display_img = m_raw_img;
+
+		QRect source = QRect(0, 0, m_display_img.width(), m_display_img.height());
 
 		// painte the image
-		painter.drawImage(target, image, source);
+		painter.drawImage(target, m_display_img, source);
 	}
 }
 
@@ -246,28 +257,6 @@ void Basler_QT::on_DiscoverCam_clicked()
 	// Select first item.
 	ui.CameraListComboBox->setCurrentIndex(0);
 }
-
-// SelectCamButton Function -- Open Selected Btn
-//void Basler_QT::on_OpenSelectedButton_clicked()
-//{
-//	// QLable show text
-//	ui.CamOpenStatusLabel->setText("Camera has been opened!");
-//
-//	int index = ui.CameraListComboBox->currentIndex();
-//	qDebug() << "Open Camera " << index << "!\n";
-//
-//	if (index < 0)
-//	{
-//		// if there is no camera opened
-//		return;
-//	}
-//
-//	// Get the pointer to Pylon::CDeviceInfo selected
-//	const Pylon::CDeviceInfo* pDeviceInfo = (const Pylon::CDeviceInfo*)ui.CameraListComboBox->itemData(index).value<void *>();
-//
-//	// Open the camera
-//	InternalOpenCamera(*pDeviceInfo, index);
-//}
 
 // CloseCamButton Function -- Close Camera Btn
 void Basler_QT::on_CloseCamButton_clicked()
@@ -374,4 +363,20 @@ void Basler_QT::on_StopButton_clicked()
 		ShowWarning(QString("Could not stop grab!\n") + QString(e.GetDescription()));
 	}
 
+}
+
+/************************************************************************/
+/* Camera Operation                                                     */
+/************************************************************************/
+// Image saving btn clicked to update the SaveImgInfoLabel
+void Basler_QT::on_SaveImgBtn_clicked()
+{
+	// get the m_raw_img for the Save Image Thread
+	if (m_cameraOperation->m_raw_img.isNull())
+	{
+		m_cameraOperation->m_raw_img = m_raw_img;
+	}
+
+	// set the SaveImgInfo Label text
+	ui.SaveImgInfo->setText("Image Saved!");
 }

@@ -38,14 +38,25 @@ void CameraOperation::ImageSave()
 	image_saved_path = m_image_folder_name + image_file_name + m_image_file_suffix;
 	qDebug() << "Image file saved path is: " << image_saved_path << "!\n";
 
-	
-	m_image_saved = true;
+	// Check the raw image
+	if (m_raw_img.isNull())
+	{
+		qDebug() << "m_raw_image is NULL!\n";
+	}
+	else
+	{
+		qDebug() << "m_raw_image is Successed!\n";
+	}
 
-}
-
-bool CameraOperation::ImageSavedSatate()
-{
-	return m_image_saved;
+	// Save image as JPG format
+	if (m_raw_img.save(image_saved_path))
+	{
+		qDebug() << "Image saved to file: " << image_saved_path << "\n";
+	}
+	else
+	{
+		qDebug() << "Failed to save image to file.\n";
+	}
 }
 
 
@@ -68,9 +79,4 @@ ImageSaveWorker::~ImageSaveWorker()
 void ImageSaveWorker::ImageSave()
 {
 	This->ImageSave();
-}
-
-bool ImageSaveWorker::ImageSavedSatate()
-{
-	return This->ImageSavedSatate();
 }

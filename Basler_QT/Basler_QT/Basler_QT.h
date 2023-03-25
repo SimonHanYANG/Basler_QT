@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QDateTime>
+#include <QThreadPool>
 
 #include "ui_Basler_QT.h"
 
@@ -37,10 +38,21 @@ public:
 	// close camera function
 	void InternalCloseCamera(int cameraId);
 
+public:
+	// all activate cameras
+	Pylon::DeviceInfoList_t m_devices;
+	// max camera number
+	static const int MaxCamera = 2;
+	// CameraControl all activate camera
+	CameraControl m_camera[MaxCamera];
+
+public:
+	// image for all operations
+	QImage m_raw_img;			// raw image data; QImage format: Format_RGB32 --> Get from Camera Grab Thread
+	QImage m_display_img;		// display image on the screen 
 
 protected:
 	virtual void paintEvent(QPaintEvent *) override;
-
 
 
 private slots:
@@ -50,30 +62,25 @@ private slots:
 	//void OnDeviceRemoved(int userHint);
 	//void OnNodeUpdated(int userHint, GenApi::INode* pNode);
 
+private slots:
 	// Slots for GUI signals
+	// Camera Control
 	void on_DiscoverCam_clicked();
 	void on_CloseCamButton_clicked();
 	void on_SingleShotButton_clicked();
 	void on_ContinuousShotButton_clicked();
 	void on_StopButton_clicked();
-
-private slots:
-	// Camera Operations
-	// void on_SaveImgBtn_clicked();
+	// Camera Operation
+	void on_SaveImgBtn_clicked();
 
 private:
 	Ui::Basler_QTClass ui;
 
-	// all activate cameras
-	Pylon::DeviceInfoList_t m_devices;
-	// max camera number
-	static const int MaxCamera = 2;
-	// CameraControl all activate camera
-	CameraControl m_camera[MaxCamera];
-
 private:
+	// image processing thread
+	QThread* m_image_process_thread;
+
 	CameraOperation* m_cameraOperation;
-	QThread* m_image_save_thread;
+
 	ImageSaveWorker* m_image_save_worker;
-	bool m_image_saved = false;
 };
