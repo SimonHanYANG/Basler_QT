@@ -31,6 +31,9 @@ public:
 	QImage m_raw_img;			// raw image data; QImage format: Format_RGB32 --> Get from Camera Grab Thread
 	cv::Mat m_copy_img;			// copied image for image processing
 
+public:
+	cv::VideoWriter cvVideoCreater;
+
 // Functions
 public:
 	//=========================================================
