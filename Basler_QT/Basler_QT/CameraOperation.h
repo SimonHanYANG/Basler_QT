@@ -1,9 +1,12 @@
 #pragma once
 #include <QObject>
+#include <QThread>
 #include <QMutex>
 #include <QImage>
+#include <QFile>
+#include <QDataStream>
+#include <QByteArray>
 #include <QDebug>
-#include <QThread>
 #include <QDateTime>
 
 
@@ -26,11 +29,6 @@ public:
 	CameraOperation();
 	virtual ~CameraOperation();
 
-// Image Result
-public:
-	QImage m_raw_img;			// raw image data; QImage format: Format_RGB32 --> Get from Camera Grab Thread
-	cv::Mat m_copy_img;			// copied image for image processing
-
 public:
 	cv::VideoWriter cvVideoCreater;
 
@@ -39,7 +37,7 @@ public:
 	//=========================================================
 	//=========================================================
 	// Image Saving Function
-	void ImageSave();
+	bool ImageSave(QImage m_raw_img);
 
 
 //=========================================================
@@ -52,21 +50,4 @@ private:
 	
 
 
-};
-
-/************************************************************************/
-/* Worker class for image saving                                        */
-/************************************************************************/
-class ImageSaveWorker : public QObject
-{
-	Q_OBJECT
-public:
-	ImageSaveWorker(void* pParameter);
-	~ImageSaveWorker();
-
-public slots:
-	void ImageSave();
-
-private:
-	CameraOperation* This;
 };

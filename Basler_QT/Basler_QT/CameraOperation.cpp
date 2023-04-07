@@ -11,7 +11,7 @@ CameraOperation::~CameraOperation()
 }
 
 // TODO: Image save function
-void CameraOperation::ImageSave()
+bool CameraOperation::ImageSave(QImage m_raw_img)
 {
 	qDebug() << "Save Image Button Clicked!\n";
 
@@ -52,31 +52,12 @@ void CameraOperation::ImageSave()
 	if (m_raw_img.save(image_saved_path))
 	{
 		qDebug() << "Image saved to file: " << image_saved_path << "\n";
+		return true;
 	}
 	else
 	{
 		qDebug() << "Failed to save image to file.\n";
+		return false;
 	}
 }
 
-
-//=========================================================
-//=========================================================
-//The ProcessImageWorker class
-ImageSaveWorker::ImageSaveWorker(void* pParameter)
-{
-	//Pass the pointer so the worker can access the variables in the mainWindow
-	This = (CameraOperation*)pParameter;
-}
-
-ImageSaveWorker::~ImageSaveWorker()
-{
-	// 在结束线程之前，需要确保所有的资源已经被释放，以避免内存泄漏和其他问题的发生。
-	// 例如，在 MyObject 的析构函数中，可以调用 QThread 的 quit() 函数来确保线程正常退出。
-	QThread::currentThread()->quit(); // 退出线程事件循环
-}
-
-void ImageSaveWorker::ImageSave()
-{
-	This->ImageSave();
-}

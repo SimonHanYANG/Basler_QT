@@ -51,9 +51,12 @@ public:
 	QImage m_raw_img;			// raw image data; QImage format: Format_RGB32 --> Get from Camera Grab Thread
 	QImage m_display_img;		// display image on the screen 
 
+
 protected:
 	virtual void paintEvent(QPaintEvent *) override;
 
+signals:
+	void frameReady(QImage frame);
 
 private slots:
 	// Slots for GuiCamera signals
@@ -72,15 +75,16 @@ private slots:
 	void on_StopButton_clicked();
 	// Camera Operation
 	void on_SaveImgBtn_clicked();
+	void on_RecordVideoStart_clicked();
+	void on_RecordVideoStop_clicked();
+	void on_ContactDetection_clicked();
 
 private:
 	Ui::Basler_QTClass ui;
 
 private:
-	// image processing thread
-	QThread* m_image_process_thread;
-
 	CameraOperation* m_cameraOperation;
 
-	ImageSaveWorker* m_image_save_worker;
+
+
 };

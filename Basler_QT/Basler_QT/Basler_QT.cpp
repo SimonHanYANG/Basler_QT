@@ -24,29 +24,8 @@ Basler_QT::Basler_QT(QWidget *parent)
 	/************************************************************************/
 	/* Image Process Thread                                                 */
 	/************************************************************************/
+	
 	m_cameraOperation = new CameraOperation();
-
-	// create image process thread
-	m_image_process_thread = new QThread;
-
-	// start the thread
-	m_image_process_thread->start(QThread::HighestPriority);
-	
-	//========================================================================
-	//========================================================================
-	// 1. Image Save -- connect btn & slot
-	// 1.1. create new ImageSaveWorker
-	m_image_save_worker = new ImageSaveWorker(m_cameraOperation);
-	// 1.2. 使用 connect() 函数连接 QThread 的 started() 信号和 MyObject 的 myFunction() 槽函数，
-	//	  当新线程启动时，myFunction() 槽函数会被自动调用，并在新线程中执行代码
-	connect(ui.SaveImgBtn, SIGNAL(clicked()), m_image_save_worker, SLOT(ImageSave()));
-	// 1.3. 创建线程的方式是创建一个 QObject 的子类，并将其移动到一个新线程中
-	m_image_save_worker->moveToThread(m_image_process_thread);
-
-
-
-
-	
 
 
 
@@ -60,15 +39,6 @@ Basler_QT::~Basler_QT()
 	{
 		m_camera[i].Close();
 	}
-
-	//========================================================================
-	//========================================================================
-	// Close all threads
-	// 1. close image process thread
-	m_image_process_thread->quit();
-	m_image_process_thread->wait();
-	delete m_image_process_thread;
-	delete m_image_save_worker;
 
 	delete& ui;
 }
@@ -202,6 +172,9 @@ void Basler_QT::paintEvent(QPaintEvent *ev)
 
 		// painte the image
 		painter.drawImage(target, m_display_img, source);
+
+		emit frameReady(m_raw_img);
+
 	}
 
 	// Repaint image of the camera 1
@@ -212,16 +185,17 @@ void Basler_QT::paintEvent(QPaintEvent *ev)
 
 		QMutexLocker locker(m_camera[1].GetBmpLock());
 
-		m_raw_img = m_camera[0].GetImage();
+		m_raw_img = m_camera[1].GetImage();
 		m_display_img = m_raw_img;
 
 		QRect source = QRect(0, 0, m_display_img.width(), m_display_img.height());
 
 		// painte the image
 		painter.drawImage(target, m_display_img, source);
+
+		emit frameReady(m_raw_img);
 	}
 }
-
 
 // DiscoverCam Function -- Discover cameras
 void Basler_QT::on_DiscoverCam_clicked()
@@ -371,12 +345,37 @@ void Basler_QT::on_StopButton_clicked()
 // Image saving btn clicked to update the SaveImgInfoLabel
 void Basler_QT::on_SaveImgBtn_clicked()
 {
-	// get the m_raw_img for the Save Image Thread
-	if (m_cameraOperation->m_raw_img.isNull())
-	{
-		m_cameraOperation->m_raw_img = m_raw_img;
-	}
+	bool image_is_saved;
+	// Save Image
+	image_is_saved = m_cameraOperation->ImageSave(m_raw_img);
 
-	// set the SaveImgInfo Label text
-	ui.SaveImgInfo->setText("Image Saved!");
+	if (image_is_saved)
+	{
+		// set the SaveImgInfo Label text
+		ui.SaveImgInfo->setText("Image Saved!");
+	}
+	else
+	{
+		// set the SaveImgInfo Label text
+		ui.SaveImgInfo->setText("Image Saved Failed!");
+	}
+	
+}
+
+void Basler_QT::on_RecordVideoStart_clicked()
+{
+	qDebug() << "on_RecordVideoStart_clicked!\n";
+	ui.ShowStatus->setText("Record Video Start!\n");
+}
+
+void Basler_QT::on_RecordVideoStop_clicked()
+{
+	qDebug() << "on_RecordVideoStop_clicked!\n";
+	ui.ShowStatus->setText("Record Video Stop!\n");
+}
+
+void Basler_QT::on_ContactDetection_clicked()
+{
+	qDebug() << "on_ContactDetection_clicked!\n";
+	ui.ShowStatus->setText("Contact Detection!\n");
 }

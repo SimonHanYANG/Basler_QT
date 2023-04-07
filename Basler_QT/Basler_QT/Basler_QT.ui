@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1243</width>
-    <height>847</height>
+    <width>1548</width>
+    <height>894</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="DiscoverCam">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>50</x>
       <y>10</y>
       <width>111</width>
       <height>31</height>
@@ -30,9 +30,9 @@
    <widget class="QComboBox" name="CameraListComboBox">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>180</x>
       <y>10</y>
-      <width>511</width>
+      <width>691</width>
       <height>31</height>
      </rect>
     </property>
@@ -40,7 +40,7 @@
    <widget class="QPushButton" name="CloseCamButton">
     <property name="geometry">
      <rect>
-      <x>660</x>
+      <x>910</x>
       <y>10</y>
       <width>91</width>
       <height>31</height>
@@ -53,9 +53,9 @@
    <widget class="QLabel" name="CamOpenStatusLabel">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>590</x>
       <y>50</y>
-      <width>361</width>
+      <width>411</width>
       <height>31</height>
      </rect>
     </property>
@@ -73,9 +73,9 @@ border-color: rgb(0, 0, 0)</string>
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
-      <width>741</width>
-      <height>661</height>
+      <y>110</y>
+      <width>1061</width>
+      <height>561</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -85,7 +85,7 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QPushButton" name="SingleShotButton">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>50</x>
       <y>50</y>
       <width>111</width>
       <height>31</height>
@@ -98,7 +98,7 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QPushButton" name="ContinuousShotButton">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>220</x>
       <y>50</y>
       <width>121</width>
       <height>31</height>
@@ -111,7 +111,7 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QPushButton" name="StopButton">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>410</x>
       <y>50</y>
       <width>121</width>
       <height>31</height>
@@ -124,7 +124,7 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>1100</x>
       <y>10</y>
       <width>421</width>
       <height>131</height>
@@ -278,10 +278,10 @@ border-color: rgb(0, 0, 0)</string>
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>1100</x>
       <y>150</y>
       <width>421</width>
-      <height>421</height>
+      <height>461</height>
      </rect>
     </property>
     <property name="font">
@@ -587,12 +587,85 @@ border-color: rgb(0, 0, 0)</string>
       <string>Up</string>
      </property>
     </widget>
+    <widget class="QLabel" name="LeftMainipulatorlabel_2">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>30</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Z-axis</string>
+     </property>
+    </widget>
+    <widget class="QSlider" name="horizontalSlider">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>430</y>
+       <width>251</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="LeftMainipulatorlabel_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>430</y>
+       <width>81</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Step Size</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="LeftMainipulatorlabel_4">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>230</y>
+       <width>51</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Z-axis</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_3">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>590</y>
+      <x>1100</x>
+      <y>620</y>
       <width>421</width>
       <height>151</height>
      </rect>
@@ -608,6 +681,67 @@ border-color: rgb(0, 0, 0)</string>
     <property name="title">
      <string>Customize Operations</string>
     </property>
+    <widget class="QPushButton" name="CellPickUp">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Cell Pick Up</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ContactDetection">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>90</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <underline>false</underline>
+      </font>
+     </property>
+     <property name="text">
+      <string>Contact Detection</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="ShowStatus">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>690</y>
+      <width>1061</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color:rgb(170, 255, 255);
+border-width: 1px;
+border-style: solid;
+border-color: rgb(0, 0, 0)</string>
+    </property>
+    <property name="text">
+     <string>Status Show</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -615,7 +749,7 @@ border-color: rgb(0, 0, 0)</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1243</width>
+     <width>1548</width>
      <height>23</height>
     </rect>
    </property>
