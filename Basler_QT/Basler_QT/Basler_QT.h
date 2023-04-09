@@ -58,11 +58,16 @@ protected:
 signals:
 	void frameReady(QImage frame);
 
+	// video start signal
+	void startVideoRecordProcess();
+	void stopVideoRecordProcess();
+
+
 private slots:
 	// Slots for GuiCamera signals
 	void OnNewGrabResult(int userHint);
 	//void OnStateChanged(int userHint, bool isGrabbing);
-	//void OnDeviceRemoved(int userHint);
+	void OnDeviceRemoved(int userHint);
 	//void OnNodeUpdated(int userHint, GenApi::INode* pNode);
 
 private slots:
@@ -73,6 +78,8 @@ private slots:
 	void on_SingleShotButton_clicked();
 	void on_ContinuousShotButton_clicked();
 	void on_StopButton_clicked();
+
+private slots:
 	// Camera Operation
 	void on_SaveImgBtn_clicked();
 	void on_RecordVideoStart_clicked();
@@ -80,11 +87,19 @@ private slots:
 	void on_ContactDetection_clicked();
 
 private:
+	void StartVideoRecordThread();
+
+private:
 	Ui::Basler_QTClass ui;
 
 private:
 	CameraOperation* m_cameraOperation;
+	// image recording thread
+	RecordImage* m_recordVideo_worker;
 
-
-
+// Threads
+private:
+	QThread* m_record_video_thread;
+	bool m_record_video_thread_is_start = false;
+	
 };

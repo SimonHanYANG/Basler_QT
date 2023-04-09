@@ -12,7 +12,7 @@ Basler_QT::Basler_QT(QWidget *parent)
 		// Connect signals from CGuiCamera class to this QTMainWindow.
 		QObject::connect(&(m_camera[i]), &CameraControl::NewGrabResult, this, &Basler_QT::OnNewGrabResult);
 		// QObject::connect(&(m_camera[i]), &CameraControl::StateChanged, this, &Basler_QT::OnStateChanged);
-		// QObject::connect(&(m_camera[i]), &CameraControl::DeviceRemoved, this, &Basler_QT::OnDeviceRemoved);
+		 QObject::connect(&(m_camera[i]), &CameraControl::DeviceRemoved, this, &Basler_QT::OnDeviceRemoved);
 		// QObject::connect(&(m_camera[i]), &CameraControl::NodeUpdated, this, &Basler_QT::OnNodeUpdated);
 	}
 
@@ -20,12 +20,17 @@ Basler_QT::Basler_QT(QWidget *parent)
 	cameraNum = EnumerateDevices();
 	qDebug() << "Detected Camera Number is: " << cameraNum;
 
+	on_DiscoverCam_clicked();
+
+	// Create camera operation Object
+	m_cameraOperation = new CameraOperation();
 
 	/************************************************************************/
-	/* Image Process Thread                                                 */
+	/* Video Recording  Thread                                              */
 	/************************************************************************/
-	
-	m_cameraOperation = new CameraOperation();
+	StartVideoRecordThread();
+
+
 
 
 
@@ -39,6 +44,12 @@ Basler_QT::~Basler_QT()
 	{
 		m_camera[i].Close();
 	}
+
+	m_record_video_thread->quit();
+	m_record_video_thread->wait();
+
+	delete m_record_video_thread;
+
 
 	delete& ui;
 }
@@ -195,6 +206,21 @@ void Basler_QT::paintEvent(QPaintEvent *ev)
 
 		emit frameReady(m_raw_img);
 	}
+}
+
+// This will be called in response to the DeviceRemoved signal posted by
+// CGuiCamera when the camera has been disconnected.
+// This function is called in the GUI thread so you can access GUI elements.
+void Basler_QT::OnDeviceRemoved(int userHint)
+{
+	InternalCloseCamera(userHint);
+
+	repaint();
+
+	ShowWarning("A camera device has been disconnected.");
+
+	// Scan for camera devices and refill the list of devies.
+	on_DiscoverCam_clicked();
 }
 
 // DiscoverCam Function -- Discover cameras
@@ -357,21 +383,62 @@ void Basler_QT::on_SaveImgBtn_clicked()
 	else
 	{
 		// set the SaveImgInfo Label text
-		ui.SaveImgInfo->setText("Image Saved Failed!");
+		ui.SaveImgInfo->setText("Saved Failed!");
 	}
 	
 }
 
+void Basler_QT::StartVideoRecordThread()
+{
+	/************************************************************************/
+	/* Image Record  Thread                                                 */
+	/************************************************************************/
+
+	qDebug() << "Recording Video Thread Start!\n";
+
+	// record video thread
+	m_record_video_thread = new QThread;
+	// record video worker
+	m_recordVideo_worker = new RecordImage();
+
+	// move to video recording thread
+	m_recordVideo_worker->moveToThread(m_record_video_thread);
+	QObject::connect(this, &Basler_QT::frameReady, m_recordVideo_worker, &RecordImage::setFrame);
+
+
+	// start recording
+	QObject::connect(this, &Basler_QT::startVideoRecordProcess, m_recordVideo_worker, &RecordImage::startRecording);
+
+	// stop recording
+	QObject::connect(this, &Basler_QT::stopVideoRecordProcess, m_recordVideo_worker, &RecordImage::stopRecording);
+
+	// start record video thread
+	m_record_video_thread->start(QThread::HighestPriority);
+}
+
+
 void Basler_QT::on_RecordVideoStart_clicked()
 {
 	qDebug() << "on_RecordVideoStart_clicked!\n";
-	ui.ShowStatus->setText("Record Video Start!\n");
+	ui.ShowStatus->setText("In Recording Thread!\nRecord Video Start!\n");
+
+
+	emit startVideoRecordProcess();
 }
 
 void Basler_QT::on_RecordVideoStop_clicked()
 {
 	qDebug() << "on_RecordVideoStop_clicked!\n";
-	ui.ShowStatus->setText("Record Video Stop!\n");
+	ui.ShowStatus->setText("In Recording Thread!\nRecord Video Stop!\n");
+
+	if (m_record_video_thread->isRunning())
+	{
+		qDebug() << "m_record_video_thread to be stopped!\n";
+
+		emit stopVideoRecordProcess();
+		
+	}
+	
 }
 
 void Basler_QT::on_ContactDetection_clicked()
